@@ -11,7 +11,7 @@ RUN ARCH="${TARGETARCH}" && \
     if [ -z "${ARCH}" ]; then ARCH=$(uname -m); fi && \
     case "${ARCH}" in \
       amd64|x86_64)    YTARCH="x86_64-linux" ;; \
-      arm64|aarch64)   YTARCH="aarch64-linux" ;; \
+      arm64|aarch64)   YTARCH="aarch64-arm64-armv7-armv8-armv9-linux" ;; \
       *)               echo "Unsupported architecture: ${ARCH}" && exit 1 ;; \
     esac && \
     wget -q "https://github.com/coffeegreg/YTuner/releases/download/${VERSION}/ytuner-${VERSION}-${YTARCH}.zip" && \
