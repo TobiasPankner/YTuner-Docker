@@ -21,6 +21,9 @@ RUN case "${TARGETARCH}" in \
     unzip -o "ytuner-${VERSION}-${ARCH}.zip" ytuner ytuner.ini -d /app/ && \
     rm "ytuner-${VERSION}-${ARCH}.zip" && \
     chmod +x /app/ytuner && \
+    sed -i 's|^CacheFolderLocation=.*|CacheFolderLocation=/app/host-shared|' /app/ytuner.ini && \
+    sed -i 's|^ConfigFolderLocation=.*|ConfigFolderLocation=/app/host-shared|' /app/ytuner.ini && \
+    sed -i 's|^DBFolderLocation=.*|DBFolderLocation=/app/host-shared|' /app/ytuner.ini && \
     apk del wget unzip
 
 WORKDIR /app
