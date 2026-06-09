@@ -15,8 +15,8 @@ RUN case "${TARGETARCH}" in \
     wget -q "https://github.com/coffeegreg/YTuner/releases/download/${VERSION}/ytuner-${VERSION}-${ARCH}.zip" && \
     mkdir -p /app && \
     unzip -o "ytuner-${VERSION}-${ARCH}.zip" -d /tmp/ytuner-extract/ && \
-    find /tmp/ytuner-extract -name ytuner -type f -exec cp {} /app/ \; && \
-    find /tmp/ytuner-extract -name ytuner.ini -type f -exec cp {} /app/ \; && \
+    cp /tmp/ytuner-extract/*/ytuner /app/ytuner 2>/dev/null || cp /tmp/ytuner-extract/ytuner /app/ytuner && \
+    cp /tmp/ytuner-extract/*/ytuner.ini /app/ytuner.ini 2>/dev/null || cp /tmp/ytuner-extract/ytuner.ini /app/ytuner.ini && \
     rm -rf "ytuner-${VERSION}-${ARCH}.zip" /tmp/ytuner-extract && \
     chmod +x /app/ytuner && \
     sed -i 's|^CacheFolderLocation=.*|CacheFolderLocation=/app/host-shared|' /app/ytuner.ini && \
