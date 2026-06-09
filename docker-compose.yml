@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  ytuner:
+    image: ghcr.io/tobiaspankner/ytuner:latest
+    container_name: ytuner
+    network_mode: host
+    volumes:
+      - ytuner-data:/app/host-shared
+    restart: unless-stopped
+
+volumes:
+  ytuner-data:
