@@ -18,7 +18,7 @@ RUN case "${TARGETARCH}" in \
     chmod +x /app/ytuner && \
     sed -i 's|^CacheFolderLocation=.*|CacheFolderLocation=/app/host-shared|' /app/ytuner.ini && \
     sed -i 's|^ConfigFolderLocation=.*|ConfigFolderLocation=/app/host-shared|' /app/ytuner.ini && \
-    sed -i 's|^DBFolderLocation=.*|DBFolderLocation=/app/host-shared|' /app/ytuner.ini && \
+    sed -i 's|^DBFolderLocation=.*|DBFolderLocation=/app/host-shared|' /app/ytuner.ini
 
 FROM debian:bookworm-slim
 
@@ -36,6 +36,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 COPY --from=downloader /app /app
+COPY docker-entrypoint.sh /
+RUN chmod +x /docker-entrypoint.sh
 
 WORKDIR /app
 
@@ -43,4 +45,5 @@ EXPOSE 80/tcp
 
 VOLUME /app/host-shared
 
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["./ytuner"]
