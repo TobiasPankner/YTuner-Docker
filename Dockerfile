@@ -13,8 +13,11 @@ RUN case "${TARGETARCH}" in \
       *)      echo "Unsupported architecture: ${TARGETARCH}" && exit 1 ;; \
     esac && \
     wget -q "https://github.com/coffeegreg/YTuner/releases/download/${VERSION}/ytuner-${VERSION}-${ARCH}.zip" && \
-    unzip -o "ytuner-${VERSION}-${ARCH}.zip" ytuner ytuner.ini -d /app/ && \
-    rm "ytuner-${VERSION}-${ARCH}.zip" && \
+    mkdir -p /app && \
+    unzip -o "ytuner-${VERSION}-${ARCH}.zip" -d /tmp/ytuner-extract/ && \
+    find /tmp/ytuner-extract -name ytuner -type f -exec cp {} /app/ \; && \
+    find /tmp/ytuner-extract -name ytuner.ini -type f -exec cp {} /app/ \; && \
+    rm -rf "ytuner-${VERSION}-${ARCH}.zip" /tmp/ytuner-extract && \
     chmod +x /app/ytuner && \
     sed -i 's|^CacheFolderLocation=.*|CacheFolderLocation=/app/host-shared|' /app/ytuner.ini && \
     sed -i 's|^ConfigFolderLocation=.*|ConfigFolderLocation=/app/host-shared|' /app/ytuner.ini && \
