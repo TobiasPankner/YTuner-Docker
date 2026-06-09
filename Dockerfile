@@ -7,17 +7,19 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends wget unzip ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-RUN case "${TARGETARCH}" in \
-      amd64)  ARCH="x86_64-linux" ;; \
-      arm64)  ARCH="aarch64-linux" ;; \
-      *)      echo "Unsupported architecture: ${TARGETARCH}" && exit 1 ;; \
+RUN ARCH="${TARGETARCH}" && \
+    if [ -z "${ARCH}" ]; then ARCH=$(uname -m); fi && \
+    case "${ARCH}" in \
+      amd64|x86_64)    YTARCH="x86_64-linux" ;; \
+      arm64|aarch64)   YTARCH="aarch64-linux" ;; \
+      *)               echo "Unsupported architecture: ${ARCH}" && exit 1 ;; \
     esac && \
-    wget -q "https://github.com/coffeegreg/YTuner/releases/download/${VERSION}/ytuner-${VERSION}-${ARCH}.zip" && \
+    wget -q "https://github.com/coffeegreg/YTuner/releases/download/${VERSION}/ytuner-${VERSION}-${YTARCH}.zip" && \
     mkdir -p /app && \
-    unzip -o "ytuner-${VERSION}-${ARCH}.zip" -d /tmp/ytuner-extract/ && \
+    unzip -o "ytuner-${VERSION}-${YTARCH}.zip" -d /tmp/ytuner-extract/ && \
     cp /tmp/ytuner-extract/*/ytuner /app/ytuner 2>/dev/null || cp /tmp/ytuner-extract/ytuner /app/ytuner && \
     cp /tmp/ytuner-extract/*/ytuner.ini /app/ytuner.ini 2>/dev/null || cp /tmp/ytuner-extract/ytuner.ini /app/ytuner.ini && \
-    rm -rf "ytuner-${VERSION}-${ARCH}.zip" /tmp/ytuner-extract && \
+    rm -rf "ytuner-${VERSION}-${YTARCH}.zip" /tmp/ytuner-extract && \
     chmod +x /app/ytuner && \
     sed -i 's|^CacheFolderLocation=.*|CacheFolderLocation=/app/host-shared|' /app/ytuner.ini && \
     sed -i 's|^ConfigFolderLocation=.*|ConfigFolderLocation=/app/host-shared|' /app/ytuner.ini && \
