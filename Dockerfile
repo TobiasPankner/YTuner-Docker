@@ -1,6 +1,6 @@
 FROM debian:bookworm-slim AS downloader
 
-ARG VERSION=1.2.2
+ARG VERSION=1.2.6
 ARG TARGETARCH
 
 RUN apt-get update && \
