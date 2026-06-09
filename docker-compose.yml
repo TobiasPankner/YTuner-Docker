@@ -4,7 +4,8 @@ services:
   ytuner:
     image: ghcr.io/tobiaspankner/ytuner:latest
     container_name: ytuner
-    network_mode: host
+    ports:
+      - "80:80"
     volumes:
       - ./data:/app/host-shared
     restart: unless-stopped

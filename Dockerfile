@@ -1,20 +1,15 @@
-FROM alpine:3.19
-
-LABEL org.opencontainers.image.title="YTuner"
-LABEL org.opencontainers.image.description="Self hosted vTuner internet radio service emulation"
-LABEL org.opencontainers.image.url="https://github.com/coffeegreg/YTuner"
-LABEL org.opencontainers.image.source="https://github.com/TobiasPankner/YTuner-Docker"
-LABEL org.opencontainers.image.licenses="MIT"
+FROM debian:bookworm-slim AS downloader
 
 ARG VERSION=1.2.2
-
-RUN apk --no-cache add libc6-compat sqlite-libs wget unzip
-
 ARG TARGETARCH
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends wget unzip ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN case "${TARGETARCH}" in \
       amd64)  ARCH="x86_64-linux" ;; \
       arm64)  ARCH="aarch64-linux" ;; \
-      arm/v7) ARCH="arm-linux" ;; \
       *)      echo "Unsupported architecture: ${TARGETARCH}" && exit 1 ;; \
     esac && \
     wget -q "https://github.com/coffeegreg/YTuner/releases/download/${VERSION}/ytuner-${VERSION}-${ARCH}.zip" && \
@@ -24,12 +19,27 @@ RUN case "${TARGETARCH}" in \
     sed -i 's|^CacheFolderLocation=.*|CacheFolderLocation=/app/host-shared|' /app/ytuner.ini && \
     sed -i 's|^ConfigFolderLocation=.*|ConfigFolderLocation=/app/host-shared|' /app/ytuner.ini && \
     sed -i 's|^DBFolderLocation=.*|DBFolderLocation=/app/host-shared|' /app/ytuner.ini && \
-    apk del wget unzip
+
+FROM debian:bookworm-slim
+
+LABEL org.opencontainers.image.title="YTuner"
+LABEL org.opencontainers.image.description="Self hosted vTuner internet radio service emulation"
+LABEL org.opencontainers.image.url="https://github.com/coffeegreg/YTuner"
+LABEL org.opencontainers.image.source="https://github.com/TobiasPankner/YTuner-Docker"
+LABEL org.opencontainers.image.licenses="MIT"
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        libsqlite3-0 \
+        libssl3 && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=downloader /app /app
 
 WORKDIR /app
 
 EXPOSE 80/tcp
-EXPOSE 53/udp
 
 VOLUME /app/host-shared
 
